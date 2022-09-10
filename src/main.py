@@ -27,12 +27,14 @@ def create_city(city: str = Query(description="Название города", d
 
 @app.post('/get-cities/', summary='Get Cities')
 def cities_list(q: str = Query(description="Название города", default=None)):
-    """
-    Получение списка городов
-    """
-    cities = Session().query(City).all()
-
-    return [{'id': city.id, 'name': city.name, 'weather': city.weather} for city in cities]
+    if q is None:
+        cities = Session().query(City).all()
+        return [{'id': city.id, 'name': city.name, 'weather': city.weather} for city in cities]
+    else:
+        city = Session().query(City).filter(City.name == q.capitalize()).first()
+        if city is None:
+            raise HTTPException(status_code=404, detail='Города с таким названием в базе нет')
+        return {'id': city.id, 'name': city.name, 'weather': city.weather}
 
 
 @app.post('/users-list/', summary='')
