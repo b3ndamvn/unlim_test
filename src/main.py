@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException, Query
 from database import engine, Session, Base, City, User, Picnic, PicnicRegistration
 from external_requests import CheckCityExisting, GetWeatherRequest
 from models import RegisterUserRequest, UserModel
+from sqlalchemy import func
 
 app = FastAPI()
 
@@ -37,12 +38,11 @@ def cities_list(q: str = Query(description="Название города", defa
         return {'id': city.id, 'name': city.name, 'weather': city.weather}
 
 
-@app.post('/users-list/', summary='')
-def users_list():
-    """
-    Список пользователей
-    """
-    users = Session().query(User).all()
+@app.post('/users-list/', summary='Get Users',
+          description='Получение списка пользователей с возможностью фильтрации по возрасту')
+def users_list(min_age: int = Query(description="Минимальный возраст пользователей", default=1),
+               max_age: int = Query(description="Максимальный возраст пользователей", default=999)):
+    users = Session().query(User).filter(User.age >= min_age, User.age <= max_age)
     return [{
         'id': user.id,
         'name': user.name,
