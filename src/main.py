@@ -3,7 +3,6 @@ from fastapi import FastAPI, HTTPException, Query
 from database import engine, Session, Base, City, User, Picnic, PicnicRegistration
 from external_requests import CheckCityExisting, GetWeatherRequest
 from models import RegisterUserRequest, UserModel
-from sqlalchemy import func
 
 app = FastAPI()
 
@@ -106,11 +105,18 @@ def picnic_add(city_id: int = None, datetime: dt.datetime = None):
 
 
 @app.get('/picnic-register/', summary='Picnic Registration', tags=['picnic'])
-def register_to_picnic(*_, **__,):
-    """
-    Регистрация пользователя на пикник
-    (Этот эндпойнт необходимо реализовать в процессе выполнения тестового задания)
-    """
-    # TODO: Сделать логику
-    return ...
+def register_to_picnic(user_id: int = None, picnic_id: int = None):
+    user = Session().query(User).filter(User.id == user_id).first()
+    picnic = Session().query(Picnic).filter(Picnic.id == picnic_id).first()
+    picnic_reg = PicnicRegistration(user_id=user_id, picnic_id=picnic_id)
+    s = Session()
+    s.add(picnic_reg)
+    s.commit()
 
+    return {
+        'id': picnic_reg.id,
+        'user_id': user.id,
+        'user_name': user.name,
+        'user_surname': user.surname,
+        'picnic_date': picnic.time,
+    }
