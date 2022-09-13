@@ -79,7 +79,7 @@ def all_picnics(datetime: dt.datetime = Query(default=None, description='Вре�
 
     return [{
         'id': pic.id,
-        'city': Session().query(City).filter(City.id == pic.id).first().name,
+        'city': Session().query(City).filter(City.id == pic.city_id).first().name,
         'time': pic.time,
         'users': [
             {
