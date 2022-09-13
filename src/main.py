@@ -7,7 +7,7 @@ from models import *
 app = FastAPI()
 
 
-@app.post('/cities/', summary='Create City', description='Создание города по его названию',
+@app.post('/cities/', summary='Create City', description='Создание города по его названию', tags=['cities'],
           response_model=CityModel)
 def create_city(city: RegisterCityRequest):
     if city is None:
@@ -27,7 +27,7 @@ def create_city(city: RegisterCityRequest):
     return CityModel.from_orm(city_object)
 
 
-@app.get('/cities/', summary='Get Cities')
+@app.get('/cities/', summary='Get Cities', tags=['cities'])
 def cities_list(q: str = Query(description="Название города", default=None)):
     if q is None:
         cities = Session().query(City).all()
@@ -40,7 +40,7 @@ def cities_list(q: str = Query(description="Название города", defa
 
 
 @app.get('/users/', summary='Get Users',
-          description='Получение списка пользователей с возможностью фильтрации по возрасту')
+          description='Получение списка пользователей с возможностью фильтрации по возрасту', tags=['users'])
 def users_list(min_age: int = Query(description="Минимальный возраст пользователей", default=1),
                max_age: int = Query(description="Максимальный возраст пользователей", default=999)):
     users = Session().query(User).filter(User.age >= min_age, User.age <= max_age)
@@ -52,7 +52,7 @@ def users_list(min_age: int = Query(description="Минимальный возр
     } for user in users]
 
 
-@app.post('/users/', summary='CreateUser', response_model=UserModel)
+@app.post('/users/', summary='CreateUser', tags=['users'], response_model=UserModel)
 def register_user(user: RegisterUserRequest):
     """
     Регистрация пользователя
