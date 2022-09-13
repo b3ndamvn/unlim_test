@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
+from datetime import datetime
 
 
 class RegisterUserRequest(BaseModel):
@@ -15,3 +16,24 @@ class UserModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class RegisterCityRequest(BaseModel):
+    name: str
+
+
+class CityModel(BaseModel):
+    id: int
+    name: str
+    weather: str
+
+
+class RegisterPicnicRequest(BaseModel):
+    city_id: int
+    time: datetime
+
+
+class PicnicModel(BaseModel):
+    id: int
+    city: str
+    time: datetime

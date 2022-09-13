@@ -2,22 +2,24 @@ import datetime as dt
 from fastapi import FastAPI, HTTPException, Query
 from database import engine, Session, Base, City, User, Picnic, PicnicRegistration
 from external_requests import CheckCityExisting, GetWeatherRequest
-from models import RegisterUserRequest, UserModel
+from models import *
 
 app = FastAPI()
 
 
-@app.post('/create-city/', summary='Create City', description='Создание города по его названию')
-def create_city(city: str = Query(description="Название города", default=None)):
+@app.post('/create-city/', summary='Create City', description='Создание города по его названию',
+          response_model=CityModel)
+def create_city(city: RegisterCityRequest):
     if city is None:
         raise HTTPException(status_code=400, detail='Параметр city должен быть указан')
+    city_dict = City(**city.dict())
     check = CheckCityExisting()
-    if not check.check_existing(city):
+    if not check.check_existing(city_dict.name):
         raise HTTPException(status_code=400, detail='Параметр city должен быть существующим городом')
 
-    city_object = Session().query(City).filter(City.name == city.capitalize()).first()
+    city_object = Session().query(City).filter(City.name == city_dict.name.capitalize()).first()
     if city_object is None:
-        city_object = City(name=city.capitalize())
+        city_object = City(name=city_dict.name.capitalize())
         s = Session()
         s.add(city_object)
         s.commit()
@@ -90,17 +92,18 @@ def all_picnics(datetime: dt.datetime = Query(default=None, description='Вре�
     } for pic in picnics]
 
 
-@app.post('/picnic-add/', summary='Picnic Add', tags=['picnic'])
-def picnic_add(city_id: int = None, datetime: dt.datetime = None):
-    p = Picnic(city_id=city_id, time=datetime)
+@app.post('/picnic-add/', summary='Picnic Add', tags=['picnic'], response_model=PicnicModel)
+def picnic_add(p: RegisterPicnicRequest):
+
+    picnic = Picnic(**p.dict())
     s = Session()
-    s.add(p)
+    s.add(picnic)
     s.commit()
 
     return {
-        'id': p.id,
-        'city': Session().query(City).filter(City.id == p.id).first().name,
-        'time': p.time,
+        'id': picnic.id,
+        'city': Session().query(City).filter(City.id == picnic.city_id).first().name,
+        'time': picnic.time,
     }
 
 
