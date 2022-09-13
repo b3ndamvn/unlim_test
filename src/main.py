@@ -24,7 +24,7 @@ def create_city(city: RegisterCityRequest):
         s.add(city_object)
         s.commit()
 
-    return {'id': city_object.id, 'name': city_object.name, 'weather': city_object.weather}
+    return CityModel.from_orm(city_object)
 
 
 @app.get('/cities/', summary='Get Cities')

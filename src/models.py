@@ -27,6 +27,9 @@ class CityModel(BaseModel):
     name: str
     weather: str
 
+    class Config:
+        orm_mode = True
+
 
 class RegisterPicnicRequest(BaseModel):
     city_id: int
@@ -37,3 +40,6 @@ class PicnicModel(BaseModel):
     id: int
     city: str
     time: datetime
+
+    class Config:
+        orm_mode = True
