@@ -7,7 +7,7 @@ from models import RegisterUserRequest, UserModel
 app = FastAPI()
 
 
-@app.get('/create-city/', summary='Create City', description='Создание города по его названию')
+@app.post('/create-city/', summary='Create City', description='Создание города по его названию')
 def create_city(city: str = Query(description="Название города", default=None)):
     if city is None:
         raise HTTPException(status_code=400, detail='Параметр city должен быть указан')
@@ -25,7 +25,7 @@ def create_city(city: str = Query(description="Название города", d
     return {'id': city_object.id, 'name': city_object.name, 'weather': city_object.weather}
 
 
-@app.post('/get-cities/', summary='Get Cities')
+@app.get('/get-cities/', summary='Get Cities')
 def cities_list(q: str = Query(description="Название города", default=None)):
     if q is None:
         cities = Session().query(City).all()
@@ -37,7 +37,7 @@ def cities_list(q: str = Query(description="Название города", defa
         return {'id': city.id, 'name': city.name, 'weather': city.weather}
 
 
-@app.post('/users-list/', summary='Get Users',
+@app.get('/users-list/', summary='Get Users',
           description='Получение списка пользователей с возможностью фильтрации по возрасту')
 def users_list(min_age: int = Query(description="Минимальный возраст пользователей", default=1),
                max_age: int = Query(description="Максимальный возраст пользователей", default=999)):
@@ -90,7 +90,7 @@ def all_picnics(datetime: dt.datetime = Query(default=None, description='Вре�
     } for pic in picnics]
 
 
-@app.get('/picnic-add/', summary='Picnic Add', tags=['picnic'])
+@app.post('/picnic-add/', summary='Picnic Add', tags=['picnic'])
 def picnic_add(city_id: int = None, datetime: dt.datetime = None):
     p = Picnic(city_id=city_id, time=datetime)
     s = Session()
@@ -104,7 +104,7 @@ def picnic_add(city_id: int = None, datetime: dt.datetime = None):
     }
 
 
-@app.get('/picnic-register/', summary='Picnic Registration', tags=['picnic'])
+@app.post('/picnic-register/', summary='Picnic Registration', tags=['picnic'])
 def register_to_picnic(user_id: int = None, picnic_id: int = None):
     user = Session().query(User).filter(User.id == user_id).first()
     picnic = Session().query(Picnic).filter(Picnic.id == picnic_id).first()
