@@ -7,7 +7,7 @@ from models import *
 app = FastAPI()
 
 
-@app.post('/create-city/', summary='Create City', description='Создание города по его названию',
+@app.post('/cities/', summary='Create City', description='Создание города по его названию',
           response_model=CityModel)
 def create_city(city: RegisterCityRequest):
     if city is None:
@@ -27,7 +27,7 @@ def create_city(city: RegisterCityRequest):
     return {'id': city_object.id, 'name': city_object.name, 'weather': city_object.weather}
 
 
-@app.get('/get-cities/', summary='Get Cities')
+@app.get('/cities/', summary='Get Cities')
 def cities_list(q: str = Query(description="Название города", default=None)):
     if q is None:
         cities = Session().query(City).all()
@@ -39,7 +39,7 @@ def cities_list(q: str = Query(description="Название города", defa
         return {'id': city.id, 'name': city.name, 'weather': city.weather}
 
 
-@app.get('/users-list/', summary='Get Users',
+@app.get('/users/', summary='Get Users',
           description='Получение списка пользователей с возможностью фильтрации по возрасту')
 def users_list(min_age: int = Query(description="Минимальный возраст пользователей", default=1),
                max_age: int = Query(description="Максимальный возраст пользователей", default=999)):
@@ -52,7 +52,7 @@ def users_list(min_age: int = Query(description="Минимальный возр
     } for user in users]
 
 
-@app.post('/register-user/', summary='CreateUser', response_model=UserModel)
+@app.post('/users/', summary='CreateUser', response_model=UserModel)
 def register_user(user: RegisterUserRequest):
     """
     Регистрация пользователя
@@ -65,7 +65,7 @@ def register_user(user: RegisterUserRequest):
     return UserModel.from_orm(user_object)
 
 
-@app.get('/all-picnics/', summary='All Picnics', tags=['picnic'])
+@app.get('/picnics/', summary='All Picnics', tags=['picnic'])
 def all_picnics(datetime: dt.datetime = Query(default=None, description='Время пикника (по умолчанию не задано)'),
                 past: bool = Query(default=True, description='Включая уже прошедшие пикники')):
     """
@@ -92,7 +92,7 @@ def all_picnics(datetime: dt.datetime = Query(default=None, description='Вре�
     } for pic in picnics]
 
 
-@app.post('/picnic-add/', summary='Picnic Add', tags=['picnic'], response_model=PicnicModel)
+@app.post('/picnics/', summary='Picnic Add', tags=['picnic'], response_model=PicnicModel)
 def picnic_add(p: RegisterPicnicRequest):
 
     picnic = Picnic(**p.dict())
@@ -107,7 +107,7 @@ def picnic_add(p: RegisterPicnicRequest):
     }
 
 
-@app.post('/picnic-register/', summary='Picnic Registration', tags=['picnic'])
+@app.post('/picnic-registration/', summary='Picnic Registration', tags=['picnic'])
 def register_to_picnic(user_id: int = None, picnic_id: int = None):
     user = Session().query(User).filter(User.id == user_id).first()
     picnic = Session().query(Picnic).filter(Picnic.id == picnic_id).first()
