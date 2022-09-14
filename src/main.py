@@ -81,14 +81,7 @@ def all_picnics(datetime: dt.datetime = Query(default=None, description='Вре�
         'id': pic.id,
         'city': Session().query(City).filter(City.id == pic.city_id).first().name,
         'time': pic.time,
-        'users': [
-            {
-                'id': pr.user.id,
-                'name': pr.user.name,
-                'surname': pr.user.surname,
-                'age': pr.user.age,
-            }
-            for pr in Session().query(PicnicRegistration).filter(PicnicRegistration.picnic_id == pic.id)],
+        'users': [pr.user for pr in Session().query(PicnicRegistration).filter(PicnicRegistration.picnic_id == pic.id)],
     } for pic in picnics]
 
 
