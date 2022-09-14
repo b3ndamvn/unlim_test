@@ -31,7 +31,7 @@ class CityModel(BaseModel):
         orm_mode = True
 
 
-class RegisterPicnicRequest(BaseModel):
+class AddPicnicRequest(BaseModel):
     city_id: int
     time: datetime
 
@@ -43,3 +43,8 @@ class PicnicModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class PicnicRegistrationRequest(BaseModel):
+    user_id: int
+    picnic_id: int
