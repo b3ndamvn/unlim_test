@@ -107,7 +107,7 @@ def picnic_add(p: RegisterPicnicRequest):
     }
 
 
-@app.post('/picnic-registration/', summary='Picnic Registration', tags=['picnic'])
+@app.post('/picnics/registration/', summary='Picnic Registration', tags=['picnic'])
 def register_to_picnic(user_id: int = None, picnic_id: int = None):
     user = Session().query(User).filter(User.id == user_id).first()
     picnic = Session().query(Picnic).filter(Picnic.id == picnic_id).first()
