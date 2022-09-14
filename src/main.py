@@ -96,7 +96,7 @@ def all_picnics(datetime: dt.datetime = Query(default=None, description='Вре�
 def picnic_add(p: RegisterPicnicRequest):
 
     if Session().query(City).filter(City.id == p.city_id).first() is None:
-        raise HTTPException(status_code=404, detail='Города с таким id не найдено')
+        raise HTTPException(status_code=400, detail='Города с таким id не найдено')
     picnic = Picnic(**p.dict())
     s = Session()
     s.add(picnic)
